@@ -9,11 +9,11 @@ object Api {
     private fun getUserImage(userId: Int): UserImage = UserImage(userId, USERS_IMAGES[userId].toString())
 
     private val USERS = listOf(
-        User(1, "One"), User(2, "Two"), User(3, "Three"), User(4, "Four")
+        User(1, "One"), User(2, "Two"), User(3, "Three")
     )
 
     private val USERS_IMAGES = hashMapOf(
-        Pair(1, "photo-1"), Pair(2, "photo-2"), Pair(3, "photo-3"), Pair(4, "photo-4")
+        Pair(1, "photo-1"), Pair(2, "photo-2"), Pair(3, "photo-3")
     )
 
 }
