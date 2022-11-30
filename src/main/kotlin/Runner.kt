@@ -2,23 +2,23 @@
 fun main() {
 
     Api.fetchUsers()
-        .doOnNext { users -> println("doOnNext of fetchUsers: $users") }
+        .doOnNext { users -> println("fetchUsers stream: $users") }
 
         .flatMapIterable{
                 users -> users
         }
-        .doOnNext { user -> println(AnsiColors.BLUE + "doOnNext of flatMapIterable: $user"  + AnsiColors.RESET ) }
+        .doOnNext { user -> println(AnsiColors.BLUE + "flatMapIterable stream: $user"  + AnsiColors.RESET ) }
 
         .flatMap {
                 user -> Api.fetchUserImage(user.id)
         }
-        .doOnNext { userImage -> println(AnsiColors.GREEN + "doOnNext of flatMap: $userImage"  + AnsiColors.RESET) }
+        .doOnNext { userImage -> println(AnsiColors.GREEN + "flatMap stream: $userImage"  + AnsiColors.RESET) }
 
         .toList()
-        .doOnSuccess { userImages -> println("doOnSuccess of toList: $userImages") }
+        .doOnSuccess { userImages -> println("toList stream: $userImages") }
 
         .subscribe(
-            { userImages -> println( "subscribe onSuccess: $userImages"  + AnsiColors.RESET) },
+            { userImages -> println( "subscribe onSuccess: $userImages") },
             { throwable -> println("subscribe onError: " + throwable.localizedMessage) }
         )
 

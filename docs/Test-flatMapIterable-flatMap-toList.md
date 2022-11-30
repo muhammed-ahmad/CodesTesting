@@ -1,30 +1,65 @@
 
 # about:
-
 in the kotlin file [Runner.kt](../src/main/kotlin/Runner.kt)
-i test the conjuction of the three rxjava operators:
-`flatMapIterable`
-`flatMap`
-`toList`
+i test the conjunction of the three rxjava operators:
+`flatMapIterable` , `flatMap` , `toList`
 
-# output:
+# explain:
 
-doOnNext of fetchUsers: [User(id=1, name=One), User(id=2, name=Two), User(id=3, name=Three)]
-<br />
-<span style="color:green;">doOnNext of flatMapIterable: User(id=1, name=One) </span>
-<br />
-<span style="color:blue;">doOnNext of flatMap: UserImage(userId=1, image=photo-1)
-<br />
-<span style="color:green;"> doOnNext of flatMapIterable: User(id=2, name=Two)</span>
-<br />
-<span style="color:blue;">
-doOnNext of flatMap: UserImage(userId=2, image=photo-2)</span>
-<br />
-<span style="color:green;">doOnNext of flatMapIterable: User(id=3, name=Three)</span>
-<br />
-<span style="color:blue;">
-doOnNext of flatMap: UserImage(userId=3, image=photo-3) </span>
-<br />
-doOnSuccess of toList: [UserImage(userId=1, image=photo-1), UserImage(userId=2, image=photo-2), UserImage(userId=3, image=photo-3)]
-subscribe onSuccess: [UserImage(userId=1, image=photo-1), UserImage(userId=2, image=photo-2), UserImage(userId=3, image=photo-3)]
+If you have a request that fetches a list of Users:
+```kotlin
+fun fetchUsers() : Observable<List<User>>
+```
+
+and you have another request that depend on the id of every User, so as to fetch another data -UserImage- like:
+```kotlin
+fun fetchUserImage(userId: Int) : Observable<UserImage>
+```
+
+and you want to combine these two requests and return a list of UserImage, then there are a three rxjava operators that used for that:
+
+```kotlin
+Api.fetchUsers()
+   .flatMapIterable { users -> users }
+   .flatMap { user -> Api.fetchUserImage(user.id) }
+   .toList()
+   .subscribe( { userImages -> println("$userImages") },
+               { t -> println("t.localizedMessage) }
+   )
+```
+
+the 1st one `flatMapIterable` will unroll/flatten the list of Users, meaning that it will send User by User.
+the 2nd one `flatMap` will take the id from the User and do the secend request fetchUserImage so as to return the UserImage.
+the 3rd one `toList` will collect all UserImages in a list so as to lastly return List<UserImage>.
+
+
+# example:
+the example here [Runner.kt](../src/main/kotlin/Runner.kt) prints what is going on in a colorized output:
+
+
+```kotlin
+    Api.fetchUsers()
+        .doOnNext { users -> println("fetchUsers stream: $users") }
+
+        .flatMapIterable{
+                users -> users
+        }
+        .doOnNext { user -> println(AnsiColors.BLUE + "flatMapIterable stream: $user"  + AnsiColors.RESET ) }
+
+        .flatMap {
+                user -> Api.fetchUserImage(user.id)
+        }
+        .doOnNext { userImage -> println(AnsiColors.GREEN + "flatMap stream: $userImage"  + AnsiColors.RESET) }
+
+        .toList()
+        .doOnSuccess { userImages -> println("toList stream: $userImages") }
+
+        .subscribe(
+            { userImages -> println( "subscribe onSuccess: $userImages") },
+            { throwable -> println("subscribe onError: " + throwable.localizedMessage) }
+        )
+```
+
+when running it gives:
+![](log.png)
 
