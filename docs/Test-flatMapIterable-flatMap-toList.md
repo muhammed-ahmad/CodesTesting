@@ -29,7 +29,9 @@ Api.fetchUsers()
 ```
 
 the 1st one `flatMapIterable` will unroll/flatten the list of Users, meaning that it will send User by User.
+<br />
 the 2nd one `flatMap` will take the id from the User and do the secend request fetchUserImage so as to return the UserImage.
+<br />
 the 3rd one `toList` will collect all UserImages in a list so as to lastly return List<UserImage>.
 
 
@@ -61,5 +63,6 @@ the example here [Runner.kt](../src/main/kotlin/Runner.kt) prints what is going 
 ```
 
 when running it gives:
+
 ![](log.png)
 
